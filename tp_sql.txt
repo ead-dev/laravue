@@ -1,0 +1,32 @@
+9- Donnez les noms des fournisseurs qui approvisionnent une usine de Paris ou de Créteil en
+produit blanc
+mysql> select produit.nom prdt,produit.couleur, usine.nom usn, fournisseur.nom frn, usine.ville usn_ville from produit, puf, usine, fournisseur where produit.id = puf.produit_id and usine.id = puf.usine_id and fournisseur.id = puf.fournisseur_id and (usine.ville = "Brazzaville" or usine.ville = "Nkayi") and couleur="blanc";
+
+10 - Donnez les noms des produits livrés à une usine par un fournisseur de la même ville
+mysql> select DISTINCT produit.nom prdt from produit, puf, usine, fournisseur where produit.id = puf.produit_id and usine.id = puf.usine_id and fournisseur.id = puf.fournisseur_id and fournisseur.ville = usine.ville;
+
+11 - Donnez les numéros des produits livrés à une usine de Paris par un fournisseur de Brazzaville
+    a - mysql> select produit.nom prdt, usine.nom usn, fournisseur.nom frn,fournisseur.ville frn_ville, usine.ville usn_ville from produit, puf, usine, fournisseur where produit.id = puf.produit_id and usine.id = puf.usine_id and fournisseur.id = puf.fournisseur_id and fournisseur.ville = usine.ville and fournisseur.ville="Brazzaville";
+    b - mysql> select produit.nom prdt, usine.nom usn, fournisseur.nom frn,fournisseur.ville frn_ville, usine.ville usn_ville from produit, puf, usine, fournisseur where produit.id = puf.produit_id and usine.id = puf.usine_id and fournisseur.id = puf.fournisseur_id and fournisseur.ville = "Brazzaville" and usine.ville="Brazzaville"
+
+12 - Donnez les noms des usines qui ont au moins un fournisseur qui n’est pas de la même
+ville
+mysql> select DISTINCT usine.nom from usine, puf, fournisseur where usine.id = puf.usine_id and fournisseur.id = puf.fournisseur_id and usine.ville != fournisseur.ville;
+
+13 - Donnez les numéros des fournisseurs qui approvisionnent à la fois des usines de numéros 2
+et 3
+ a - mysql> select DISTINCT fournisseur_id from puf where usine_id = 2 INTERSECT select DISTINCT fournisseur_id from puf where usine_id =3;
+ b - mysql> select nom from fournisseur where id IN (select DISTINCT fournisseur_id from puf where usine_id = 2 INTERSECT select DISTINCT fournisseur_id from puf where usine_id =3);
+
+14 - Donnez les numéros des usines qui utilisent au moins un produit disponible chez le
+fournisseur de numéro 3 (c’est-à-dire un produit que le fournisseur livre mais pas
+nécessairement à cette usine)
+    a - mysql> SELECT DISTINCT  usine_id from puf where produit_id IN (select DISTINCT produit_id from puf where fournisseur_id = 3);
+    b - mysql> SELECT id, nom,ville from usine where id IN (SELECT DISTINCT  usine_id from puf where produit_id IN (select DISTINCT produit_id from puf where fournisseur_id = 3));
+
+15 - Donnez le numéro du produit le plus léger (les numéros si plusieurs produits ont ce même
+poids)
+mysql> SELECT * from produit where poids = (select min(poids) from produit);
+
+16 - Donnez les usines qui ne reçoivent aucun produit blanc d’un fournisseur brazzavilleois
+mysql> select * from usine where id NOT IN (select DISTINCT usine_id from puf where produit_id IN (SELECT id from produit where id IN (select produit_id from puf where fournisseur_id IN (select id from fournisseur where ville = "Brazzaville")) AND couleur='blanc'));
