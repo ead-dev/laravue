@@ -10,6 +10,14 @@ class EtudiantController extends Controller
     //
     public function index(){
         $items = Etudiant::all();
-       return view('Etudiants.index',compact('items'));
+        //dd($items);
+        if(auth()->user()->role_id==1){
+            return view('Etudiants.index',compact('items'));
+        }
+
+        if(auth()->user()->role_id==2){
+            return view('Etudiants._index',compact('items'));
+        }
+
     }
 }

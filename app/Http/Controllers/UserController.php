@@ -17,6 +17,24 @@ class UserController extends Controller
         return view('Users.create');
     }
 
+    public function disable($id){
+        $user = User::find($id);
+        if($user){
+            $user->active = 0;
+            $user->save();
+        }
+        return redirect()->back();
+    }
+
+    public function enable($id){
+        $user = User::find($id);
+        if($user){
+            $user->active = 1;
+            $user->save();
+        }
+        return redirect()->back();
+    }
+
     public function store(Request $request){
        // dd($request->all());
 

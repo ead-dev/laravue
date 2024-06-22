@@ -22,17 +22,55 @@ use Illuminate\Support\Facades\Route;
  */
 //Auth::routes();
 
-Route::middleware('auth')
+Route::middleware(['auth','agent'])
+    ->prefix('agent')
    ->group(function(){
-    Route::get('/users',[UserController::class,'index']);
-    Route::post('/users',[UserController::class,'store']);
-    Route::get('/users/create',[UserController::class,'create']);
+   // Route::get('/users',[UserController::class,'index']);
     Route::get('/etudiants',[EtudiantController::class,'index']);
 });
+
+Route::prefix('admin')
+    ->middleware(['auth','admin'])
+    ->group(function(){
+        Route::get('/etudiants',[EtudiantController::class,'index']);
+        Route::get('/etudiants/create',[EtudiantController::class,'create']);
+        Route::post('/etudiants',[EtudiantController::class,'store']);
+
+        Route::get('/users',[UserController::class,'index']);
+        Route::get('/users/create',[UserController::class,'create']);
+        Route::post('/users',[UserController::class,'store']);
+    });
+
+
+Route::prefix('enseignant')
+    ->middleware(['auth','enseignant'])
+    ->group(function(){
+        Route::get('/etudiants',[EtudiantController::class,'index']);
+        Route::get('/etudiants/create',[EtudiantController::class,'create']);
+        Route::post('/etudiants',[EtudiantController::class,'store']);
+
+
+    });
+
+
+
+Route::middleware(['auth'])
+   // ->prefix('admin')
+   ->group(function(){
+   // Route::get('/users',[UserController::class,'index']);//->middleware('active');
+   // Route::post('/users',[UserController::class,'store']);
+    Route::get('/users/create',[UserController::class,'create']);
+    Route::get('/etudiants',[EtudiantController::class,'index']);
+    Route::get('/users/disable/{id}',[UserController::class,'disable'])->name('users.disable');
+    Route::get('/users/enable/{id}',[UserController::class,'enable'])->name('users.enable');
+
+});
+
+
 
 
 
 Route::get('/agents',[App\Http\Controllers\HomeController::class, 'getItems']);
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('auth');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index']); //->middleware('active');
